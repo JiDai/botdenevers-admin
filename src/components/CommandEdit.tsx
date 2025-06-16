@@ -11,7 +11,6 @@ import {
 	useFieldValue
 } from 'react-admin';
 import { useRef } from 'react';
-import { Icon } from '@mui/material';
 
 const AudioPlayer = (props) => {
 	const value = useFieldValue(props);
