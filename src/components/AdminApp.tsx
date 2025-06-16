@@ -1,0 +1,61 @@
+import { Admin, Resource, CustomRoutes, withLifecycleCallbacks } from 'react-admin';
+import { Route } from 'react-router-dom';
+import { createClient } from '@supabase/supabase-js';
+import {
+	CreateGuesser,
+	ForgotPasswordPage,
+	ListGuesser,
+	LoginPage,
+	SetPasswordPage,
+	defaultI18nProvider,
+	supabaseDataProvider,
+	supabaseAuthProvider
+} from 'ra-supabase';
+import { CommandEdit } from '@/components/CommandEdit';
+
+const instanceUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+const apiKey = process.env.NEXT_PUBLIC_SUPABASE_API_KEY!;
+const supabaseClient = createClient(instanceUrl, apiKey);
+const dataProvider = withLifecycleCallbacks(supabaseDataProvider({ instanceUrl, apiKey, supabaseClient }), [
+	{
+		resource: '*', // Note * support is unreleased so we'll want to wait on that
+		beforeSave: async (data) => {
+			console.log(`data: `, data);
+			const newFiles = (
+				await Promise.all(
+					Object.keys(data)
+						.filter((key) => data[key]?.rawFile instanceof File)
+						.map((key) => [key, data[key]])
+						.map(async ([key, file]) => {
+							const { data, error } = await supabaseClient.storage
+								.from('botdenevers')
+								.upload(`sounds/commands/${file.rawFile.name}`, file.rawFile);
+							if (error) throw error;
+							const path = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/botdenevers/${data?.path}`;
+							return { [key]: path };
+						})
+				)
+			).reduce((acc, val) => ({ ...acc, ...val }), {});
+			return { ...data, ...newFiles };
+		}
+	}
+]);
+
+const authProvider = supabaseAuthProvider(supabaseClient, {});
+
+const AdminApp = () => (
+	<Admin
+		dataProvider={dataProvider}
+		authProvider={authProvider}
+		i18nProvider={defaultI18nProvider}
+		loginPage={LoginPage}
+	>
+		<Resource name="command" list={ListGuesser} hasShow={false} edit={CommandEdit} create={CreateGuesser} />
+
+		<CustomRoutes noLayout>
+			<Route path={SetPasswordPage.path} element={<SetPasswordPage />} />
+			<Route path={ForgotPasswordPage.path} element={<ForgotPasswordPage />} />
+		</CustomRoutes>
+	</Admin>
+);
+export default AdminApp;
