@@ -12,7 +12,12 @@ import {
 } from 'react-admin';
 import { useRef } from 'react';
 
-const AudioPlayer = (props) => {
+type AudioPlayerProps = {
+	source: string;
+	title: string;
+};
+
+const AudioPlayer = (props: AudioPlayerProps) => {
 	const value = useFieldValue(props);
 	const audioRef = useRef<HTMLAudioElement | null>(null);
 
