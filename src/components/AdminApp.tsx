@@ -3,9 +3,10 @@ import { Route } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
 import {
 	CreateGuesser,
-	ForgotPasswordPage,
 	ListGuesser,
+	EditGuesser,
 	LoginPage,
+	ForgotPasswordPage,
 	SetPasswordPage,
 	defaultI18nProvider,
 	supabaseDataProvider,
@@ -20,7 +21,6 @@ const dataProvider = withLifecycleCallbacks(supabaseDataProvider({ instanceUrl, 
 	{
 		resource: '*', // Note * support is unreleased so we'll want to wait on that
 		beforeSave: async (data) => {
-			console.log(`data: `, data);
 			const newFiles = (
 				await Promise.all(
 					Object.keys(data)
@@ -51,6 +51,7 @@ const AdminApp = () => (
 		loginPage={LoginPage}
 	>
 		<Resource name="command" list={ListGuesser} hasShow={false} edit={CommandEdit} create={CreateGuesser} />
+		<Resource name="configuration" list={ListGuesser} hasShow={false} edit={EditGuesser} create={CreateGuesser} />
 
 		<CustomRoutes noLayout>
 			<Route path={SetPasswordPage.path} element={<SetPasswordPage />} />
