@@ -1,16 +1,16 @@
-import { Admin, Resource, CustomRoutes, withLifecycleCallbacks } from 'react-admin';
+import { Admin, CustomRoutes, Resource, withLifecycleCallbacks } from 'react-admin';
 import { Route } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
 import {
 	CreateGuesser,
-	ListGuesser,
-	EditGuesser,
-	LoginPage,
-	ForgotPasswordPage,
-	SetPasswordPage,
 	defaultI18nProvider,
-	supabaseDataProvider,
-	supabaseAuthProvider
+	EditGuesser,
+	ForgotPasswordPage,
+	ListGuesser,
+	LoginPage,
+	SetPasswordPage,
+	supabaseAuthProvider,
+	supabaseDataProvider
 } from 'ra-supabase';
 import { CommandEdit } from '@/components/CommandEdit';
 
@@ -41,22 +41,28 @@ const dataProvider = withLifecycleCallbacks(supabaseDataProvider({ instanceUrl, 
 	}
 ]);
 
-const authProvider = supabaseAuthProvider(supabaseClient, {});
+const authProvider = supabaseAuthProvider(supabaseClient, {
+	async getIdentity(user) {
+		return user;
+	}
+});
 
-const AdminApp = () => (
-	<Admin
-		dataProvider={dataProvider}
-		authProvider={authProvider}
-		i18nProvider={defaultI18nProvider}
-		loginPage={LoginPage}
-	>
-		<Resource name="command" list={ListGuesser} hasShow={false} edit={CommandEdit} create={CreateGuesser} />
-		<Resource name="configuration" list={ListGuesser} hasShow={false} edit={EditGuesser} create={CreateGuesser} />
+const AdminApp = () => {
+	return (
+		<Admin
+			dataProvider={dataProvider}
+			authProvider={authProvider}
+			i18nProvider={defaultI18nProvider}
+			loginPage={<LoginPage providers={['twitch']} />}
+		>
+			<Resource name="command" list={ListGuesser} hasShow={false} edit={CommandEdit} create={CreateGuesser} />
+			<Resource name="configuration" list={ListGuesser} hasShow={false} edit={EditGuesser} create={CreateGuesser} />
 
-		<CustomRoutes noLayout>
-			<Route path={SetPasswordPage.path} element={<SetPasswordPage />} />
-			<Route path={ForgotPasswordPage.path} element={<ForgotPasswordPage />} />
-		</CustomRoutes>
-	</Admin>
-);
+			<CustomRoutes noLayout>
+				<Route path={SetPasswordPage.path} element={<SetPasswordPage />} />
+				<Route path={ForgotPasswordPage.path} element={<ForgotPasswordPage />} />
+			</CustomRoutes>
+		</Admin>
+	);
+};
 export default AdminApp;

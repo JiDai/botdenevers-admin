@@ -1,14 +1,16 @@
 // in src/posts.js
 import {
+	BooleanInput,
+	Button,
 	Edit,
+	FileInput,
+	ReferenceManyField,
+	required,
+	SelectInput,
 	SimpleForm,
 	TextInput,
-	SelectInput,
-	BooleanInput,
-	FileInput,
-	Button,
-	required,
-	useFieldValue
+	useFieldValue,
+	WithRecord
 } from 'react-admin';
 import { useRef } from 'react';
 
@@ -40,17 +42,28 @@ const AudioPlayer = (props: AudioPlayerProps) => {
 	);
 };
 
-export const CommandEdit = () => (
-	<Edit>
-		<SimpleForm>
-			<TextInput label="Name" source="name" validate={required()} />
-			<TextInput label="Message" source="message" />
-			<BooleanInput label="Active" source="active" />
-			<BooleanInput label="Module" source="module" />
-			<TextInput label="Permission" source="permission" />
-			<SelectInput label="Type" source="type" choices={['chat', 'sound_alert', 'visual_alert']} />
-			<FileInput label="Media file" source="file_url" accept={{ 'audio/*': ['.mp3', '.wav'] }} />
-			<AudioPlayer source="file_url" title="title" />
-		</SimpleForm>
-	</Edit>
-);
+export const CommandEdit = () => {
+	return (
+		<Edit>
+			<SimpleForm>
+				<TextInput label="Name" source="name" validate={required()} />
+				<ReferenceManyField reference="command_label" target="command_id">
+					<WithRecord
+						render={(record) => (
+							<SimpleForm>
+								<TextInput source="label" label={`Label ${record.language}`} />
+							</SimpleForm>
+						)}
+					/>
+				</ReferenceManyField>
+				<TextInput label="Message" source="message" />
+				<BooleanInput label="Active" source="active" />
+				<BooleanInput label="Module" source="module" />
+				<TextInput label="Permission" source="permission" />
+				<SelectInput label="Type" source="type" choices={['chat', 'sound_alert', 'visual_alert']} />
+				<FileInput label="Media file" source="file_url" accept={{ 'audio/*': ['.mp3', '.wav'] }} />
+				<AudioPlayer source="file_url" title="title" />
+			</SimpleForm>
+		</Edit>
+	);
+};
