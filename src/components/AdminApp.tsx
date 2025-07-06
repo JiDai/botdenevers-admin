@@ -1,6 +1,7 @@
 import { Admin, CustomRoutes, Resource, withLifecycleCallbacks } from 'react-admin';
 import { Route } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
+import { createContext, useContext } from 'react';
 import {
 	CreateGuesser,
 	defaultI18nProvider,
@@ -13,6 +14,8 @@ import {
 	supabaseDataProvider
 } from 'ra-supabase';
 import { CommandEdit } from '@/components/CommandEdit';
+import { GameEdit } from '@/components/GameEdit';
+import { GameList } from '@/components/GameList';
 
 const instanceUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const apiKey = process.env.NEXT_PUBLIC_SUPABASE_API_KEY!;
@@ -57,6 +60,7 @@ const AdminApp = () => {
 		>
 			<Resource name="command" list={ListGuesser} hasShow={false} edit={CommandEdit} create={CreateGuesser} />
 			<Resource name="configuration" list={ListGuesser} hasShow={false} edit={EditGuesser} create={CreateGuesser} />
+			<Resource name="game" list={GameList} hasShow={false} edit={GameEdit} create={CreateGuesser} />
 
 			<CustomRoutes noLayout>
 				<Route path={SetPasswordPage.path} element={<SetPasswordPage />} />
