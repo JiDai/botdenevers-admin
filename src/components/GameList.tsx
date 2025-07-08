@@ -6,16 +6,15 @@ import {
 	DatagridBodyProps,
 	DatagridRowProps,
 	DateInput,
+	EditButton,
+	FieldProps,
 	List,
-	NumberField,
 	NumberInput,
 	TextField,
 	TextInput,
-	WrapperField,
-	FieldProps,
 	useRecordContext,
 } from 'react-admin';
-import { BaseTextFieldProps, Checkbox, TableCell, TableRow, Tooltip } from '@mui/material';
+import { Checkbox, TableCell, TableRow, Tooltip } from '@mui/material';
 
 import { useQuery } from '@tanstack/react-query';
 import { useHttpClient } from '@/lib/HttpClient/useHttpClient';
@@ -114,7 +113,7 @@ const MyDatagridRow = ({ onToggleItem, children, selected, selectable }: Datagri
 	) : null;
 };
 
-const MyDatagridBody = (props: DatagridBodyProps) => <DatagridBody {...props} row={<MyDatagridRow />} />;
+const MyDataGripBody = (props: DatagridBodyProps) => <DatagridBody {...props} row={<MyDatagridRow />} />;
 
 export const GameList = () => {
 	const filters = [
@@ -131,7 +130,7 @@ export const GameList = () => {
 
 	return (
 		<List filters={filters}>
-			<Datagrid body={<MyDatagridBody />}>
+			<Datagrid body={<MyDataGripBody />}>
 				<TextField source="id" width={100} />
 				<BooleanField source="active" width={50} />
 				<TextField source="status" width={100} />
@@ -139,6 +138,7 @@ export const GameList = () => {
 				<TwitchField source="twitch_id" width={200} />
 				<TextField source="description" />
 				<TextField source="youtube_url" />
+				<EditButton />
 			</Datagrid>
 		</List>
 	);

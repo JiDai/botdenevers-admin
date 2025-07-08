@@ -11,7 +11,7 @@ import {
 	LoginPage,
 	SetPasswordPage,
 	supabaseAuthProvider,
-	supabaseDataProvider
+	supabaseDataProvider,
 } from 'ra-supabase';
 import { CommandEdit } from '@/components/CommandEdit';
 import { GameEdit } from '@/components/GameEdit';
@@ -36,18 +36,18 @@ const dataProvider = withLifecycleCallbacks(supabaseDataProvider({ instanceUrl, 
 							if (error) throw error;
 							const path = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/botdenevers/${data?.path}`;
 							return { [key]: path };
-						})
+						}),
 				)
 			).reduce((acc, val) => ({ ...acc, ...val }), {});
 			return { ...data, ...newFiles };
-		}
-	}
+		},
+	},
 ]);
 
 const authProvider = supabaseAuthProvider(supabaseClient, {
 	async getIdentity(user) {
 		return user;
-	}
+	},
 });
 
 const AdminApp = () => {
