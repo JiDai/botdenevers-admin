@@ -1,29 +1,21 @@
-import {
-	AutocompleteInput,
-	BooleanInput,
-	Edit,
-	required,
-	SelectInput,
-	SimpleForm,
-	TextInput,
-	useGetList,
-} from 'react-admin';
+import { AutocompleteInput, BooleanInput, Edit, required, SelectInput, SimpleForm, TextInput } from 'react-admin';
 import { useQuery } from '@tanstack/react-query';
 import { useHttpClient } from '@/lib/HttpClient/useHttpClient';
 import { useState } from 'react';
-import { Box } from '@mui/system';
+import { IGDBGame } from '@/types/IGDBGame';
+import { TwitchGame } from '@/types/TwitchGame';
+import { keepPreviousData } from '@tanstack/query-core';
 
 const TwitchCategoryInput = () => {
 	const { client } = useHttpClient();
 	const [searchQuery, setSearchQuery] = useState('');
 
-	const { data, isLoading } = useQuery({
+	const { data, isLoading } = useQuery<TwitchGame[]>({
 		queryKey: ['/api/twitch/search-categories', searchQuery],
 		queryFn: () => client.get(`/api/twitch/search-categories?query=${searchQuery}`),
+		placeholderData: keepPreviousData,
 		enabled: !!searchQuery,
-		keepPreviousData: true,
 	});
-	console.log(`data: `, data);
 
 	return (
 		<AutocompleteInput
@@ -32,8 +24,9 @@ const TwitchCategoryInput = () => {
 			isPending={isLoading}
 			choices={data || []}
 			onInputChange={(e) => {
-				if (e?.target?.value) {
-					setSearchQuery(e.target.value);
+				const target = e?.target as HTMLInputElement | null;
+				if (target?.value) {
+					setSearchQuery(target.value);
 				}
 			}}
 			optionText="name"
@@ -46,13 +39,12 @@ const IGDBInput = () => {
 	const { client } = useHttpClient();
 	const [searchQuery, setSearchQuery] = useState('');
 
-	const { data, isLoading } = useQuery({
+	const { data, isLoading } = useQuery<IGDBGame[]>({
 		queryKey: ['/api/igdb/search', searchQuery],
 		queryFn: () => client.get(`/api/igdb/search?query=${searchQuery}`),
+		placeholderData: keepPreviousData,
 		enabled: !!searchQuery,
-		keepPreviousData: true,
 	});
-	console.log(`data: `, data);
 
 	return (
 		<AutocompleteInput
@@ -61,8 +53,9 @@ const IGDBInput = () => {
 			isPending={isLoading}
 			choices={data || []}
 			onInputChange={(e) => {
-				if (e?.target?.value) {
-					setSearchQuery(e.target.value);
+				const target = e?.target as HTMLInputElement | null;
+				if (target?.value) {
+					setSearchQuery(target.value);
 				}
 			}}
 			optionText="name"

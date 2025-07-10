@@ -1,7 +1,6 @@
 import { Admin, CustomRoutes, Resource, withLifecycleCallbacks } from 'react-admin';
 import { Route } from 'react-router-dom';
 import { createClient } from '@supabase/supabase-js';
-import { createContext, useContext } from 'react';
 import {
 	CreateGuesser,
 	defaultI18nProvider,
@@ -22,7 +21,7 @@ const apiKey = process.env.NEXT_PUBLIC_SUPABASE_API_KEY!;
 const supabaseClient = createClient(instanceUrl, apiKey);
 const dataProvider = withLifecycleCallbacks(supabaseDataProvider({ instanceUrl, apiKey, supabaseClient }), [
 	{
-		resource: '*', // Note * support is unreleased so we'll want to wait on that
+		resource: '*', // Note * support is unreleased, so we'll want to wait on that
 		beforeSave: async (data) => {
 			const newFiles = (
 				await Promise.all(
