@@ -5,7 +5,6 @@ import {
 	DatagridBody,
 	DatagridBodyProps,
 	DatagridRowProps,
-	DateInput,
 	EditButton,
 	FieldProps,
 	List,
@@ -23,6 +22,7 @@ import { useHttpClient } from '@/lib/HttpClient/useHttpClient';
 import { IGDBGame } from '@/types/IGDBGame';
 import { TwitchGame } from '@/types/TwitchGame';
 import { Children, isValidElement } from 'react';
+import Image from 'next/image';
 
 const IGDBField = (props: FieldProps & { width: number }) => {
 	const record = useRecordContext(props);
@@ -42,7 +42,7 @@ const IGDBField = (props: FieldProps & { width: number }) => {
 		`${record?.igdb_id} loading...`
 	) : data ? (
 		data?.cover.url ? (
-			<Tooltip title={<img src={data?.cover.url} width={data.cover.width} alt="Game cover" />} placement="left">
+			<Tooltip title={<Image src={data?.cover.url} width={data.cover.width} alt="Game cover" />} placement="left">
 				<span>{`${data.name} (#${data.id})`}</span>
 			</Tooltip>
 		) : (
@@ -70,7 +70,7 @@ const TwitchField = (props: FieldProps & { width: number }) => {
 		`${record?.twitch_id} loading...`
 	) : data ? (
 		data?.box_art_url ? (
-			<Tooltip title={<img src={data?.box_art_url} />} placement="top">
+			<Tooltip title={<Image src={data?.box_art_url} alt="" />} placement="top">
 				<span>{`${data.name} (#${data.id})`}</span>
 			</Tooltip>
 		) : (

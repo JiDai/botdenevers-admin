@@ -38,25 +38,41 @@ const CommandLabelsEditor = () => {
 
 	const handleCreate = () => {
 		if (!newLabel.language || !newLabel.label) return;
-		create('command_label', {
-			data: { command_id: record.id, language: newLabel.language, label: newLabel.label },
-		}, { onSuccess: () => { setNewLabel({ language: '', label: '' }); refetch(); } });
+		create(
+			'command_label',
+			{
+				data: { command_id: record.id, language: newLabel.language, label: newLabel.label },
+			},
+			{
+				onSuccess: () => {
+					setNewLabel({ language: '', label: '' });
+					refetch();
+				},
+			},
+		);
 	};
 
 	return (
 		<Stack gap={1} width="100%">
 			<Typography variant="caption">Labels</Typography>
-			{labels.map((label: any) => (
-				<Stack key={label.id} direction="row" alignItems="center" gap={1}>
-					<Typography width={80} variant="body2" color="text.secondary">{label.language}</Typography>
-					<TextField
-						size="small"
-						value={getValue(label)}
-						onChange={(e) => setValues((v) => ({ ...v, [label.id]: e.target.value }))}
-					/>
-					<IconButton size="small" onClick={() => handleSave(label)}><SaveIcon fontSize="small" /></IconButton>
-				</Stack>
-			))}
+			{labels.map((label: { id: number; label: string; language: string }) => {
+				console.log(`label: `, label);
+				return (
+					<Stack key={label.id} direction="row" alignItems="center" gap={1}>
+						<Typography width={80} variant="body2" color="text.secondary">
+							{label.language}
+						</Typography>
+						<TextField
+							size="small"
+							value={getValue(label)}
+							onChange={(e) => setValues((v) => ({ ...v, [label.id]: e.target.value }))}
+						/>
+						<IconButton size="small" onClick={() => handleSave(label)}>
+							<SaveIcon fontSize="small" />
+						</IconButton>
+					</Stack>
+				);
+			})}
 			<Stack direction="row" alignItems="center" gap={1} mt={1}>
 				<TextField
 					size="small"
@@ -71,7 +87,9 @@ const CommandLabelsEditor = () => {
 					value={newLabel.label}
 					onChange={(e) => setNewLabel((v) => ({ ...v, label: e.target.value }))}
 				/>
-				<IconButton size="small" onClick={handleCreate}><SaveIcon fontSize="small" /></IconButton>
+				<IconButton size="small" onClick={handleCreate}>
+					<SaveIcon fontSize="small" />
+				</IconButton>
 			</Stack>
 		</Stack>
 	);

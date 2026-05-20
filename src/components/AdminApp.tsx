@@ -20,7 +20,7 @@ import { CommandList } from '@/components/CommandList';
 const instanceUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const apiKey = process.env.NEXT_PUBLIC_SUPABASE_API_KEY!;
 const supabaseClient = createClient(instanceUrl, apiKey);
-const baseDataProvider = supabaseDataProvider({ instanceUrl, apiKey, supabaseClient });
+const baseDataProvider = supabaseDataProvider({ instanceUrl, apiKey, supabaseClient: supabaseClient as any });
 const dataProvider = withLifecycleCallbacks(
 	{
 		...baseDataProvider,
@@ -52,13 +52,11 @@ const dataProvider = withLifecycleCallbacks(
 	],
 );
 
-const authProvider = supabaseAuthProvider(supabaseClient, {
+const authProvider = supabaseAuthProvider(supabaseClient as any, {
 	async getIdentity(user) {
 		return user;
 	},
 });
-
-const ConfigurationList = () => <ListGuesser perPage={50} />;
 
 const AdminApp = () => {
 	return (
@@ -69,7 +67,7 @@ const AdminApp = () => {
 			loginPage={<LoginPage providers={['twitch']} />}
 		>
 			<Resource name="command" list={CommandList} hasShow={false} edit={CommandEdit} create={CreateGuesser} />
-			<Resource name="configuration" list={ConfigurationList} hasShow={false} edit={EditGuesser} create={CreateGuesser} />
+			<Resource name="configuration" list={ListGuesser} hasShow={false} edit={EditGuesser} create={CreateGuesser} />
 			<Resource name="game" list={GameList} hasShow={false} edit={GameEdit} create={CreateGuesser} />
 
 			<CustomRoutes noLayout>
