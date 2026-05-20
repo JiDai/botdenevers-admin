@@ -1,44 +1,79 @@
-// in src/posts.js
+import { useState } from 'react';
 import {
 	BooleanInput,
-	Button,
 	Edit,
 	FileInput,
-	ReferenceManyField,
 	required,
 	SelectInput,
 	SimpleForm,
 	TextInput,
-	useFieldValue,
-	WithRecord
+	useCreate,
+	useGetManyReference,
+	useRecordContext,
+	useUpdate,
 } from 'react-admin';
-import { useRef } from 'react';
+import { IconButton, Stack, TextField, Typography } from '@mui/material';
+import SaveIcon from '@mui/icons-material/Save';
+import { AudioPlayer } from './AudioPlayer';
 
-type AudioPlayerProps = {
-	source: string;
-	title: string;
-};
+const CommandLabelsEditor = () => {
+	const record = useRecordContext();
+	const { data: labels = [], refetch } = useGetManyReference('command_label', {
+		target: 'command_id',
+		id: record?.id,
+	});
+	const [update] = useUpdate();
+	const [create] = useCreate();
+	const [values, setValues] = useState<Record<number, string>>({});
+	const [newLabel, setNewLabel] = useState({ language: '', label: '' });
 
-const AudioPlayer = (props: AudioPlayerProps) => {
-	const value = useFieldValue(props);
-	const audioRef = useRef<HTMLAudioElement | null>(null);
+	if (record?.parent_id !== null) return null;
 
-	const playAudio = () => {
-		if (audioRef.current) {
-			audioRef.current.play();
-		}
+	const getValue = (label: { id: number; label: string }) =>
+		values[label.id] !== undefined ? values[label.id] : label.label;
+
+	const handleSave = (label: { id: number; label: string }) => {
+		update('command_label', { id: label.id, data: { label: getValue(label) }, previousData: label });
 	};
 
-	// During edition value is a File object, after saved, this is an URL
-	const savedValue = typeof value === 'string' ? value : '';
+	const handleCreate = () => {
+		if (!newLabel.language || !newLabel.label) return;
+		create('command_label', {
+			data: { command_id: record.id, language: newLabel.language, label: newLabel.label },
+		}, { onSuccess: () => { setNewLabel({ language: '', label: '' }); refetch(); } });
+	};
+
 	return (
-		savedValue && (
-			<div>
-				<Button type="button" onClick={playAudio}>
-					Play {value.split('/').pop()}
-				</Button>
-			</div>
-		)
+		<Stack gap={1} width="100%">
+			<Typography variant="caption">Labels</Typography>
+			{labels.map((label: any) => (
+				<Stack key={label.id} direction="row" alignItems="center" gap={1}>
+					<Typography width={80} variant="body2" color="text.secondary">{label.language}</Typography>
+					<TextField
+						size="small"
+						value={getValue(label)}
+						onChange={(e) => setValues((v) => ({ ...v, [label.id]: e.target.value }))}
+					/>
+					<IconButton size="small" onClick={() => handleSave(label)}><SaveIcon fontSize="small" /></IconButton>
+				</Stack>
+			))}
+			<Stack direction="row" alignItems="center" gap={1} mt={1}>
+				<TextField
+					size="small"
+					placeholder="langue (ex: fr)"
+					value={newLabel.language}
+					onChange={(e) => setNewLabel((v) => ({ ...v, language: e.target.value }))}
+					sx={{ width: 80 }}
+				/>
+				<TextField
+					size="small"
+					placeholder="label"
+					value={newLabel.label}
+					onChange={(e) => setNewLabel((v) => ({ ...v, label: e.target.value }))}
+				/>
+				<IconButton size="small" onClick={handleCreate}><SaveIcon fontSize="small" /></IconButton>
+			</Stack>
+		</Stack>
 	);
 };
 
@@ -47,15 +82,7 @@ export const CommandEdit = () => {
 		<Edit>
 			<SimpleForm>
 				<TextInput label="Name" source="name" validate={required()} />
-				<ReferenceManyField reference="command_label" target="command_id">
-					<WithRecord
-						render={(record) => (
-							<SimpleForm>
-								<TextInput source="label" label={`Label ${record.language}`} />
-							</SimpleForm>
-						)}
-					/>
-				</ReferenceManyField>
+				<CommandLabelsEditor />
 				<TextInput label="Message" source="message" />
 				<BooleanInput label="Active" source="active" />
 				<BooleanInput label="Module" source="module" />

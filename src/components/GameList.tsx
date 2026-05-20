@@ -10,10 +10,12 @@ import {
 	FieldProps,
 	List,
 	NumberInput,
+	SelectInput,
 	TextField,
 	TextInput,
 	useRecordContext,
 } from 'react-admin';
+import { useAPISchema } from 'ra-supabase';
 import { Checkbox, TableCell, TableRow, Tooltip } from '@mui/material';
 
 import { useQuery } from '@tanstack/react-query';
@@ -26,7 +28,6 @@ const IGDBField = (props: FieldProps & { width: number }) => {
 	const record = useRecordContext(props);
 	const { client } = useHttpClient();
 
-	console.log(`record?.igdb_id: `, record?.igdb_id);
 	const { data, error, isLoading } = useQuery({
 		queryKey: ['/api/twitch', record?.igdb_id],
 		queryFn: () => client.get<IGDBGame>(`/api/igdb/${record?.igdb_id}`),
@@ -116,20 +117,24 @@ const MyDatagridRow = ({ onToggleItem, children, selected, selectable }: Datagri
 const MyDataGripBody = (props: DatagridBodyProps) => <DatagridBody {...props} row={<MyDatagridRow />} />;
 
 export const GameList = () => {
+	const { data: schema } = useAPISchema();
+	const statusChoices = (schema?.definitions?.game?.properties?.status?.enum ?? []).map((v: string) => ({
+		id: v,
+		name: v,
+	}));
+
 	const filters = [
 		<TextInput source="id" key="id" />,
-		<DateInput source="created_at" key="created_at" />,
-		<DateInput source="updated_at" key="updated_at" />,
 		<NumberInput source="igdb_id" key="igdb_id" />,
-		<TextInput source="description" key="description" />,
-		<BooleanInput source="active" key="active" />,
-		<TextInput source="youtube_url" key="youtube_url" />,
 		<NumberInput source="twitch_id" key="twitch_id" />,
-		<TextInput source="status" key="status" />,
+		<TextInput source="description@ilike" key="description" label="Description" />,
+		<BooleanInput source="active" key="active" />,
+		<BooleanInput source="off" key="off" />,
+		<SelectInput source="status" key="status" choices={statusChoices} />,
 	];
 
 	return (
-		<List filters={filters}>
+		<List filters={filters} perPage={50}>
 			<Datagrid body={<MyDataGripBody />}>
 				<TextField source="id" width={100} />
 				<BooleanField source="active" width={50} />

@@ -1,4 +1,4 @@
-import { AutocompleteInput, BooleanInput, Edit, required, SelectInput, SimpleForm, TextInput } from 'react-admin';
+import { AutocompleteInput, BooleanInput, Create, required, SelectInput, SimpleForm, TextInput } from 'react-admin';
 import { useQuery } from '@tanstack/react-query';
 import { useHttpClient } from '@/lib/HttpClient/useHttpClient';
 import { useState } from 'react';
@@ -64,13 +64,12 @@ const IGDBInput = () => {
 	);
 };
 
-export const GameEdit = () => {
+export const GameNew = () => {
 	return (
-		<Edit>
+		<Create>
 			<SimpleForm>
 				<TextInput source="description" label="Description" multiline rows={4} />
 				<BooleanInput source="active" label="Active" defaultValue={true} />
-				<BooleanInput source="off" label="Off" defaultValue={false} />
 				<TextInput source="youtube_url" label="YouTube URL" />
 				<TwitchCategoryInput />
 				<IGDBInput />
@@ -88,6 +87,6 @@ export const GameEdit = () => {
 					defaultValue="todo"
 				/>
 			</SimpleForm>
-		</Edit>
+		</Create>
 	);
 };
