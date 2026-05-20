@@ -4,7 +4,7 @@ import { useHttpClient } from '@/lib/HttpClient/useHttpClient';
 import { useState } from 'react';
 import { IGDBGame } from '@/types/IGDBGame';
 import { TwitchGame } from '@/types/TwitchGame';
-import { keepPreviousData } from '@tanstack/query-core';
+import { keepPreviousData } from '@tanstack/react-query';
 
 const TwitchCategoryInput = () => {
 	const { client } = useHttpClient();
